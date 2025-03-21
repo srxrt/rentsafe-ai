@@ -6,14 +6,14 @@ import json
 app = FastAPI()
 
 KAFKA_TOPIC = "contract_topic"
-KAFKA_BROKER = "localhost:9092"  # Change to your Kafka broker address
+KAFKA_BROKER = "localhost:10000,localhost:10001,localhost:10002"  # Change to your Kafka broker address
 
 
 async def consume():
     consumer = AIOKafkaConsumer(
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BROKER,
-        group_id="contract_group",  # Consumer group ID
+        group_id="contract_group",
         value_deserializer=lambda v: json.loads(v.decode("utf-8")),
     )
     await consumer.start()
@@ -25,8 +25,8 @@ async def consume():
 
 
 @app.on_event("startup")
-async def startup_event():
-    asyncio.create_task(consume())
+async def start_kafka_consumer():
+    asyncio.create_task(consume())  # Run the consumer in the background
 
 
 @app.get("/")
