@@ -1,12 +1,31 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from aiokafka import AIOKafkaConsumer
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 import asyncio
 import json
 
-app = FastAPI()
 
 KAFKA_TOPIC = "contract_topic"
+KAFKA_TOPIC_REPLY = "contract_topic.reply"
 KAFKA_BROKER = "localhost:10000,localhost:10001,localhost:10002"  # Change to your Kafka broker address
+
+producer = None
+
+
+async def produce(response_data):
+    global producer
+    if producer is None:
+        producer = AIOKafkaProducer(
+            bootstrap_servers=KAFKA_BROKER,
+            value_serializer=lambda v: json.dumps(v).encode("utf-8"),
+        )
+        await producer.start()
+    try:
+        print(await producer.send_and_wait(KAFKA_TOPIC_REPLY, value=response_data))
+    except Exception as e:
+        print(f"Error sending message: {e}")
+    finally:
+        print("Message has been send!")
 
 
 async def consume():
@@ -19,14 +38,25 @@ async def consume():
     await consumer.start()
     try:
         async for msg in consumer:
+            # TODO: analyze the contract with OpenAI api
+            # get the response_data
             print(f"📩 Received contract data: {msg.value}")
+
+            response_data = {"processedData": "processed_data----------------"}
+            await produce(response_data)
     finally:
         await consumer.stop()
 
 
-@app.on_event("startup")
-async def start_kafka_consumer():
-    asyncio.create_task(consume())  # Run the consumer in the background
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    asyncio.create_task(consume())
+    yield
+    if producer:
+        await producer.stop()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
