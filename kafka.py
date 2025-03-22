@@ -18,7 +18,7 @@ async def produce(response_data):
         )
         await producer.start()
     try:
-        print(await producer.send_and_wait(KAFKA_TOPIC_REPLY, value=response_data))
+        await producer.send_and_wait(KAFKA_TOPIC_REPLY, value=response_data)
     except Exception as e:
         print(f"Error sending message: {e}")
     finally:
@@ -30,16 +30,18 @@ async def consume():
         KAFKA_TOPIC,
         bootstrap_servers=KAFKA_BROKER,
         group_id="contract_group",
-        value_deserializer=lambda v: json.loads(v.decode("utf-8")),
+        value_deserializer=lambda v: v.decode("utf-8"),
     )
     await consumer.start()
     try:
         async for msg in consumer:
-            # TODO: analyze the contract with OpenAI api
-            # get the response_data
-            print(f"📩 Received contract data: {msg.value}")
+            print(f"Received contract data: {msg.value}")
 
             response_data = await analyze(msg.value)
+            print(f"response_data {response_data}")
+            if response_data is None:
+                response_data = {"error": "Error while processing!"}
+
             await produce(response_data)
     finally:
         await consumer.stop()

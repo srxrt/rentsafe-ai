@@ -17,3 +17,6 @@ app = FastAPI(lifespan=lifespan)
 @app.get("/")
 async def root():
     return {"message": "Hello From RentSafe AI Service!"}
+
+
+# uvicorn main:app --reload
