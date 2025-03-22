@@ -1,13 +1,13 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+from analyzer import analyze
 import asyncio
 import json
 
-
 KAFKA_TOPIC = "contract_topic"
 KAFKA_TOPIC_REPLY = "contract_topic.reply"
-KAFKA_BROKER = "localhost:10000,localhost:10001,localhost:10002"  # Change to your Kafka broker address
+KAFKA_BROKER = "localhost:10000,localhost:10001,localhost:10002"
 
 producer = None
 
@@ -42,7 +42,7 @@ async def consume():
             # get the response_data
             print(f"📩 Received contract data: {msg.value}")
 
-            response_data = {"processedData": "processed_data----------------"}
+            response_data = await analyze(msg.value)
             await produce(response_data)
     finally:
         await consumer.stop()
@@ -61,4 +61,4 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World!"}
+    return {"message": "Hello From RentSafe AI Service!"}

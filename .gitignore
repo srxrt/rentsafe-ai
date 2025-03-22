@@ -1,0 +1,73 @@
+
+# Python-related
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.dylib
+*.egg-info/
+.eggs/
+dist/
+build/
+*.log
+
+# FastAPI-related
+*.sqlite3
+*.db
+*.env
+*.env.*
+
+# Virtual environment directories
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE-related
+.vscode/
+.idea/
+
+# Docker files (if applicable)
+docker-compose.override.yml
+.docker/
+
+# pytest-related (if using pytest)
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.tox
+*.nox
+*.coverage
+*.hypothesis/
+
+# Jupyter Notebook files (if applicable)
+.ipynb_checkpoints
+
+# OS-related
+.DS_Store
+Thumbs.db
+
+# FastAPI database migrations (if using Alembic or other DB migration tools)
+alembic.ini
+migrations/
+
+# Logs
+logs/
+*.log
+
+# FastAPI Secret files
+secrets/
+*.key
+*.pem
+
+# Python virtualenv created by pipenv
+Pipfile.lock
+Pipfile
+
+# FastAPI static and media files (if applicable)
+static/
+media/
