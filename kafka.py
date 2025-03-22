@@ -22,7 +22,7 @@ async def produce(response_data):
     except Exception as e:
         print(f"Error sending message: {e}")
     finally:
-        print("Message has been send!")
+        print("Message has been sent!")
 
 
 async def consume():
