@@ -9,8 +9,9 @@ async def analyze(contract):
     try:
         response = await client.responses.create(
             model="gpt-3.5-turbo",
-            instructions=Config.INSTRUCTIONS,
-            input=f"analyze this contract: {contract}",
+            input="Write a one-sentence bedtime story about a unicorn.",
+            # instructions=Config.INSTRUCTIONS,
+            # input=f"analyze this contract: {contract}",
         )
         return response.output_text
     except Exception as e:
